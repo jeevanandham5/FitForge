@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Layout,
   Typography,
@@ -25,6 +25,15 @@ function App() {
   const [isUserModalOpen, setUserIsModalOpen] = useState(false);
   const [themeModal, setThemeModal] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    // Check for an image in localStorage when the component loads
+    const savedImage = localStorage.getItem("uploadedImage");
+    if (savedImage) {
+      setProfile(savedImage);
+    }
+  }, []);
 
   const showUserModal = () => {
     setUserIsModalOpen(true);
@@ -96,6 +105,7 @@ function App() {
 
           <Avatar icon={<UserOutlined />} onClick={showUserModal} />
         </Header>
+
         <TypewriterQuoteScroller />
         <Content className="p-6">
           <div className="max-w-4xl mx-auto w-full flex justify-center">

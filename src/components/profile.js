@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import { Image, Upload, Input, Button, message, Row, Col } from "antd";
-import { SetupForm } from "./SetupForm";
+import { Image, Upload, Input, message } from "antd";
 import WorkoutSelector from "./WorkoutSelector";
 import { useWorkoutStore } from "../store/workoutStore";
+import Test from "./test";
 
 // Helper function to convert file to base64
 const getBase64 = (file) =>
@@ -116,20 +116,52 @@ const UserProfileModel = () => {
       setMultiImageList(formattedMultiImageList);
     }
   }, []);
+  const [image, setImage] = useState(null);
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    const imgname = file.name;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      const img = new Image();
+      img.src = reader.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxSize = Math.max(img.width, img.height);
+        canvas.width = maxSize;
+        canvas.height = maxSize;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(
+          img,
+          (maxSize - img.width) / 2,
+          (maxSize - img.height) / 2
+        );
+        canvas.toBlob(
+          (blob) => {
+            const file = new File([blob], imgname, {
+              type: "image/png",
+              lastModified: Date.now(),
+            });
+            setImage(file);
+
+            // Convert the image blob to a Base64 string and store in localStorage
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onload = () => {
+              localStorage.setItem("uploadedImage", reader.result);
+            };
+          },
+          "image/jpeg",
+          0.8
+        );
+      };
+    };
+  };
 
   return (
     <div className="p-5">
       <div className="flex items-center justify-between gap-5 my-2">
-        <Upload
-          action={null} // No server interaction (handle locally)
-          listType="picture-circle"
-          fileList={fileList}
-          onPreview={handlePreview}
-          onChange={handleSingleImageChange}
-          beforeUpload={() => false} // Prevent automatic upload to server
-        >
-          {fileList.length >= 1 ? null : uploadButton}
-        </Upload>
+        <Test />
         <div className="flex flex-col w-full gap-2">
           <Input
             placeholder="Username"
@@ -155,7 +187,7 @@ const UserProfileModel = () => {
         </div>
       </div>
 
-      {previewImage && (
+      {/*previewImage && (
         <div className="mt-6 flex justify-center">
           <Image
             src={previewImage}
@@ -167,7 +199,7 @@ const UserProfileModel = () => {
             }}
           />
         </div>
-      )}
+      )*/}
 
       {/* Display multiple uploaded images (square) */}
       <div className="mt-6 grid grid-cols-3 gap-4">
