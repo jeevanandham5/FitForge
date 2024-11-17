@@ -16,6 +16,7 @@ import { UserOutlined } from "@ant-design/icons";
 import UserProfilemodel from "./components/profile";
 import TypewriterQuoteScroller from "./components/QuoteScroller";
 import Theme from "./components/theme";
+import { Test2, UserAvatar } from "./components/test";
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
@@ -25,15 +26,6 @@ function App() {
   const [isUserModalOpen, setUserIsModalOpen] = useState(false);
   const [themeModal, setThemeModal] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [profile, setProfile] = useState(null);
-
-  useEffect(() => {
-    // Check for an image in localStorage when the component loads
-    const savedImage = localStorage.getItem("uploadedImage");
-    if (savedImage) {
-      setProfile(savedImage);
-    }
-  }, []);
 
   const showUserModal = () => {
     setUserIsModalOpen(true);
@@ -102,8 +94,7 @@ function App() {
               FitForge
             </Title>
           </div>
-
-          <Avatar icon={<UserOutlined />} onClick={showUserModal} />
+          <UserAvatar showUserModal={showUserModal} />
         </Header>
 
         <TypewriterQuoteScroller />

@@ -1,3 +1,6 @@
+import Jumpingjacks from "../demo/Jumpingjacks.mp4";
+import Armcircles from "../demo/Armcircles.mp4";
+import Legswing from "../demo/Legswings.mp4";
 export const workouts = [
   {
     level: "Beginner",
@@ -6,9 +9,9 @@ export const workouts = [
       {
         title: "Warm-Up",
         exercises: [
-          { name: "Jumping jacks", duration: "2 minutes" },
-          { name: "Arm circles", duration: "1 minute" },
-          { name: "Leg swings", duration: "1 minute each leg" },
+          { name: "Jumping jacks", duration: "2 minutes", demo: Jumpingjacks },
+          { name: "Arm circles", duration: "1 minute", demo: Armcircles },
+          { name: "Leg swings", duration: "1 minute each leg", demo: Legswing },
         ],
       },
       {

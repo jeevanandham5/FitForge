@@ -160,7 +160,7 @@ const UserProfileModel = () => {
 
   return (
     <div className="p-5">
-      <div className="flex items-center justify-between gap-5 my-2">
+      <div className="flex flex-col items-center justify-between gap-5 my-2">
         <Test />
         <div className="flex flex-col w-full gap-2">
           <Input

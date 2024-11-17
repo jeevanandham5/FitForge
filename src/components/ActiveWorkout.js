@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Card, Typography, Button, Progress } from "antd";
 import { useWorkoutStore } from "../store/workoutStore";
 import { WorkoutTimer } from "./WorkoutTimer";
@@ -14,22 +14,56 @@ export const ActiveWorkout = () => {
     nextExercise,
   } = useWorkoutStore();
 
-  if (!currentWorkout) return null;
+  const videoRef = useRef(null);
 
-  const currentSection = currentWorkout.sections[currentSectionIndex];
-  const currentExercise = currentSection.exercises[currentExerciseIndex];
+  // Safely access currentExercise and currentSection
+  const currentSection =
+    currentWorkout?.sections?.[currentSectionIndex] || null;
+  const currentExercise =
+    currentSection?.exercises?.[currentExerciseIndex] || null;
 
   // Calculate overall progress
-  const totalExercises = currentWorkout.sections.reduce(
-    (total, section) => total + section.exercises.length,
-    0
-  );
-  const completedExercises =
-    currentWorkout.sections
-      .slice(0, currentSectionIndex)
-      .reduce((total, section) => total + section.exercises.length, 0) +
-    currentExerciseIndex;
-  const progress = Math.round((completedExercises / totalExercises) * 100);
+  const totalExercises = currentWorkout
+    ? currentWorkout.sections.reduce(
+        (total, section) => total + section.exercises.length,
+        0
+      )
+    : 0;
+
+  const completedExercises = currentWorkout
+    ? currentWorkout.sections
+        .slice(0, currentSectionIndex)
+        .reduce((total, section) => total + section.exercises.length, 0) +
+      currentExerciseIndex
+    : 0;
+
+  const progress = totalExercises
+    ? Math.round((completedExercises / totalExercises) * 100)
+    : 0;
+
+  // Reload the video whenever the current exercise changes
+  useEffect(() => {
+    const videoElement = videoRef.current;
+
+    if (videoElement && currentExercise?.demo) {
+      videoElement.load(); // Load the new video source
+
+      // Wait for the video to be ready before playing
+      const handleCanPlay = () => {
+        videoElement.play();
+      };
+
+      videoElement.addEventListener("canplay", handleCanPlay);
+
+      // Cleanup event listener on unmount
+      return () => {
+        videoElement.removeEventListener("canplay", handleCanPlay);
+      };
+    }
+  }, [currentExercise?.demo]);
+
+  // If no workout is active, return null
+  if (!currentWorkout) return null;
 
   return (
     <Card className="max-w-2xl w-full shadow-lg">
@@ -47,6 +81,19 @@ export const ActiveWorkout = () => {
           <Title level={4} className="!mt-1">
             {currentExercise.name}
           </Title>
+          <div className="w-full bg-red-200 flex items-center justify-center">
+            <video
+              ref={videoRef} // Attach the ref
+              width="100%"
+              height="auto"
+              autoPlay
+              loop
+              muted
+            >
+              <source src={currentExercise.demo} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
           {currentExercise.description && (
             <Text type="secondary">{currentExercise.description}</Text>
           )}

@@ -1,4 +1,5 @@
-import { Button } from "antd";
+import { UserOutlined } from "@ant-design/icons";
+import { Avatar, Button } from "antd";
 import React, { useRef, useState, useEffect } from "react";
 
 export default function Test() {
@@ -109,6 +110,39 @@ export default function Test() {
       <Button onClick={handleClick} type="primary" size="small">
         {image ? "Change Image" : "Upload Image"}
       </Button>
+    </div>
+  );
+}
+
+export function UserAvatar({ showUserModal }) {
+  const [image, setImage] = useState(null);
+  useEffect(() => {
+    // Check for an image in localStorage when the component loads
+    const savedImage = localStorage.getItem("uploadedImage");
+    if (savedImage) {
+      const file = dataURLToFile(savedImage, "saved-image.png");
+      setImage(file);
+    }
+  }, []);
+  const dataURLToFile = (dataURL, filename) => {
+    const arr = dataURL.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
+  return (
+    <div>
+      <Avatar
+        size={"large"}
+        icon={<UserOutlined />}
+        src={image && URL.createObjectURL(image)}
+        onClick={showUserModal}
+      />
     </div>
   );
 }
